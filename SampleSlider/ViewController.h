@@ -2,7 +2,7 @@
 //  ViewController.h
 //  SampleSlider
 //
-//  Created by Jayesh on 11/18/14.
+//  Created by Jayesh on 12/3/14.
 //  Copyright (c) 2014 WhiteSnow. All rights reserved.
 //
 
@@ -10,6 +10,6 @@
 
 @interface ViewController : UIViewController
 
+@property (strong, nonatomic) NSDictionary *restuarantDetail;
 
 @end
-

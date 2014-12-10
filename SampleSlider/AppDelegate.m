@@ -7,16 +7,34 @@
 //
 
 #import "AppDelegate.h"
+#import "MonkeyPhone.h"
+#import "CallViewController.h"
+#import "PayPalMobile.h"
 
 @interface AppDelegate ()
+
+
+#pragma mark -
+#pragma mark Application lifecycle
+
 
 @end
 
 @implementation AppDelegate
+@synthesize window = _window;
+@synthesize phone = _phone;
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
     // Override point for customization after application launch.
+    self.phone = [[MonkeyPhone alloc] init];
+
+#warning "Enter your credentials"
+    [PayPalMobile initializeWithClientIdsForEnvironments:@{PayPalEnvironmentProduction : @"maldhureakshay-buyer-1@gmail.com",PayPalEnvironmentSandbox : @"AZEdvBAEQtEhu-dLAZgT7DofVOYngCvQ1de5--5-yUEvAYse0q-tCAbbYTHu"}];
+    
+    
+
+
     return YES;
 }
 

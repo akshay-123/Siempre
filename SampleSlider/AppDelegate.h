@@ -7,11 +7,19 @@
 //
 
 #import <UIKit/UIKit.h>
+@class MonkeyPhone;
 
-@interface AppDelegate : UIResponder <UIApplicationDelegate>
+@interface AppDelegate : NSObject <UIApplicationDelegate>
 
-@property (strong, nonatomic) UIWindow *window;
+//@property (strong, nonatomic) UIWindow *window;
 
+{
+    UIWindow* _window;
+    MonkeyPhone* _phone;
+}
+
+@property (nonatomic, retain) MonkeyPhone* phone;
+@property (nonatomic, retain) IBOutlet UIWindow* window;
 
 @end
 
