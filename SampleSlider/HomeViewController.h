@@ -2,12 +2,13 @@
 //  HomeViewController.h
 //  SampleSlider
 //
-//  Created by Jayesh on 12/9/14.
-//  Copyright (c) 2014 WhiteSnow. All rights reserved.
+//  Created by Jayesh on 21/01/15.
+//  Copyright (c) 2015 WhiteSnow. All rights reserved.
 //
 
-#import <UIKit/UIKit.h>
+#import "ViewController.h"
 
-@interface HomeViewController : UIViewController
+@interface HomeViewController : ViewController
+- (IBAction)homeTextView:(id)sender;
 
 @end

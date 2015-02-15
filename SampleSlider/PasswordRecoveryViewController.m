@@ -40,45 +40,53 @@
     mySpinner.hidesWhenStopped = YES;
     [self.view addSubview:mySpinner];
     
-    AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    
-    NSDictionary *parameter = @{@"email_ID":EmailIDTxt.text};
-    
-    NSURL *baseUrl =[NSURL URLWithString:@"http://192.168.2.104:8080/recoverPassword/"];
     
     
-    [manager GET:[baseUrl absoluteString] parameters:parameter success:^(AFHTTPRequestOperation *operation, id responseObject)
-     {
-         self.posts = (NSDictionary *) responseObject;
-         self.post = self.posts[@"mailSent"][@"success"];
-         
-         NSLog(@"%@",self.post);
-         
-         if (self.post)
+    
+    if ([EmailIDTxt.text isEqualToString:@""]) {
+        [mySpinner stopAnimating];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please enter the Email" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [alert show];
+    }else{
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        
+        NSString *serverAddress =[NSString stringWithFormat:@"http://54.174.166.2/recoverPassword?email_ID=%@",EmailIDTxt.text];
+        [manager GET:serverAddress parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
          {
+             self.posts = (NSDictionary *) responseObject;
+             NSString *response = self.posts[@"mailSent"][@"success"];
+             
+             NSLog(@"%@",self.post);
+             
+             
+             if ([response isEqualToString:@"true"])
+             {
+                 [mySpinner stopAnimating];
+                 //[self performSegueWithIdentifier:@"SignInSegue" sender:self];
+                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Message Sent" message:@"Reset Instructions are sent to your email" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                 [alert show];
+             }
+             else
+             {
+                 [mySpinner stopAnimating];
+                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:@"Invalid Email ID" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                 [alert show];
+             }
+             
+             
+             //NSLog(@"Unsuccessful");
+             
+             
+             //NSLog(@"JSON: %@", responseObject);
+             
+         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+             NSLog(@"Error: %@", error);
              [mySpinner stopAnimating];
-             //[self performSegueWithIdentifier:@"SignInSegue" sender:self];
-             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Email Sent" message:@"Mail Sent Successfully" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error..!!" message:@"Error Connecting to Server...!!!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
              [alert show];
-         }
-         else
-         {
-             NSLog(@"Unknown Error...........");
-         }
-         
-         
-         //NSLog(@"Unsuccessful");
-         
-         
-         //NSLog(@"JSON: %@", responseObject);
-         
-     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-         NSLog(@"Error: %@", error);
-         [mySpinner stopAnimating];
-         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error..!!" message:@"Error Connecting to Server...!!!" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
-         [alert show];
-     }];
-    
+         }];
+        
+    }
     
 }
 

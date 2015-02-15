@@ -43,8 +43,14 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-     self.tableView.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:@"menu.png"]];
-}
+    // self.tableView.backgroundColor = [UIColor colo [UIImage imageNamed:@"sliderMenuBtn.png"]];
+    
+    UIImageView *imageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"sliderMenuBtn.png"]];
+    [self.tableView setBackgroundView:imageView];
+    
+   [self.tableView setSeparatorColor:[UIColor whiteColor]];
+  
+    }
 
 - (void)openContentNavigationController:(UINavigationController *)nvc
 {
@@ -61,6 +67,15 @@
 #pragma mark - TableView Delegate -
 /*----------------------------------------------------*/
 
+
+-(CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+        
+    return 150.0f;
+}
+
+
+
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([self.mainVC respondsToSelector:@selector(navigationControllerForIndexPathInLeftMenu:)]) {
@@ -74,6 +89,7 @@
             [self performSegueWithIdentifier:segueIdentifier sender:self];
         }
     }
+     
 }
 
 

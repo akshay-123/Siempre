@@ -7,14 +7,16 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TwilioClient.h"
 
-@interface callingVieController : UIViewController{
+@interface callingVieController : UIViewController<TCDeviceDelegate,TCConnectionDelegate>{
     UITextField *calledNumber;
 }
 @property (retain, nonatomic) IBOutlet UILabel *calledPhoneNumber;
 @property (retain,nonatomic) IBOutlet UITextField *calledNumber;
+@property (weak, nonatomic) IBOutlet UILabel *displayTimer;
 
 - (IBAction)callEndBtn:(id)sender;
-
+-(void)timer;
 
 @end

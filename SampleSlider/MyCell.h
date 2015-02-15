@@ -13,5 +13,7 @@
 @property (weak,nonatomic)IBOutlet UIImageView *cellImage;
 @property (weak,nonatomic)IBOutlet UILabel *phoneLabel;
 @property (weak,nonatomic)IBOutlet UILabel *msgBody;
+@property (weak, nonatomic) IBOutlet UILabel *date;
+@property (weak, nonatomic) IBOutlet UILabel *time;
 
 @end

@@ -7,6 +7,10 @@
 //
 
 #import "MainVCViewController.h"
+#import "AFNetworking.h"
+#import "AppDelegate.h"
+#import "Reachability.h"
+
 
 @interface MainVCViewController ()
 
@@ -17,29 +21,67 @@
 - (void)viewDidLoad {
     [super viewDidLoad];
     // Do any additional setup after loading the view.
-   // [[UINavigationBar appearance] setTintColor:[UIColor redColor]];
-  //   [[UINavigationBar appearance] setBackIndicatorImage:[UIImage imageNamed:@"back_btn.png"]];
-    //[[UINavigationBar appearance] setBackIndicatorTransitionMaskImage:[UIImage imageNamed:@"back_btn.png"]];
-     //[[UINavigationBar appearance] setBackIndicatorImage:[UIImage imageNamed:@"siempre.png"]];
-   // [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"siempre.png"] forBarPosition: barMetrics:<#(UIBarMetrics)#>];
-    
+    //Back Color Button
+     [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(presentView) name:@"receivePresentCallScreen" object:nil];
+    //[self.navigationController.navigationBar setBackgroundImage:[UIImage imageNamed:@"password.png"] forBarMetrics:UIBarMetricsDefault];
  //   [[UINavigationBar appearance] setBarTintColor:[UIColor  0x92A6B3]];
 
 #define UIColorFromRGB(rgbValue) [UIColor colorWithRed:((float)((rgbValue & 0xFF0000) >> 16))/255.0 green:((float)((rgbValue & 0xFF00) >> 8))/255.0 blue:((float)(rgbValue & 0xFF))/255.0 alpha:1.0]
-   //[[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0x092A6B3)];
+   [[UINavigationBar appearance] setBarTintColor:UIColorFromRGB(0x90A5B2)];
+ //   [[UINavigationBar appearance] setBackgroundImage:[UIImage imageNamed:@"header.png"] forBarMetrics:UIBarMetricsDefault];
+
+    [[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+    //[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(handleNotification) name:@"handleNotification" object:nil];
     
-   // self.navigationController.title = @"Siempre";
-   
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *userName = [defaults objectForKey:@"userName"];
+    
+    
+    Reachability *networkReachability = [Reachability reachabilityForInternetConnection];
+    NetworkStatus networkStatus = [networkReachability currentReachabilityStatus];
+    if (networkStatus == NotReachable) {
+        NSLog(@"There IS NO internet connection");
+        
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:@"Please check Internet Connection" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [alert show];
+    } else {
+        NSLog(@"There IS internet connection");
+        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
+        NSString *url = [NSString stringWithFormat:@"http://54.174.166.2/getLoginStatus?email_ID=%@",userName];
+        
+        [manager GET:url parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
+         {
+             
+             if((userName == nil)&&[[[responseObject objectForKey:@"loginStatus"]valueForKey:@"login"]isEqualToString:@"false"]){
+                 
+                 UIStoryboard *mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+                 UIViewController *vc = [mainStoryBoard instantiateViewControllerWithIdentifier:@"SignInMainStoryBoard"];
+                 [self presentViewController:vc animated:YES completion:nil ];
+             }else{
+                 NSLog(@"Logged IN In Seeion User");
+                 AppDelegate *delegate = [UIApplication sharedApplication].delegate;
+                 [delegate registrationForTwilio];
+             }
+         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+             
+         }];
+
+    }
+    
+    
+    
     
 }
 -(NSString *)segueIdentifierForIndexPathInLeftMenu:(NSIndexPath *)indexPath
 {
     NSString *identifier;
+    
      NSLog(@"Row--->%ld",(long)indexPath.row);
     switch (indexPath.row) {
            
         case 0:
             identifier = @"home";
+            
             break;
         
         case 1:
@@ -61,6 +103,10 @@
     return identifier;
 }
 
+-(void)handleNotification{
+    [self openContentViewControllerForMenu:AMSlideMenuLeft atIndexPath: [NSIndexPath indexPathForRow:2 inSection:0]];
+}
+
 
 -(CGFloat)leftMenuWidth
 
@@ -71,6 +117,20 @@
 -(void)configureLeftMenuButton:(UIButton *)button
 {
     
-    [button setImage:[UIImage imageNamed:@"siempre.png"] forState:UIControlStateNormal];
+    CGRect frame = button.frame;
+    frame.origin = (CGPoint) {0,0};
+    frame.size = (CGSize){25,25};
+    button.frame = frame;
+    [button setImage:[UIImage imageNamed:@"togglebtnSlider.png"] forState:UIControlStateNormal];
+    
 }
+-(void)presentView{
+    UIStoryboard *mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+    UIViewController *vc = [mainStoryBoard instantiateViewControllerWithIdentifier:@"ReceivingCall"];
+    
+    [self presentViewController:vc animated:YES completion:nil ];
+
+    
+}
+
 @end

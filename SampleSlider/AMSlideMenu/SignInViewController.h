@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface SignInViewController : UIViewController
-<UITextFieldDelegate>
+<UITextFieldDelegate,UIApplicationDelegate>
 
 {
     IBOutlet UITextField *userNameTextfield;
@@ -21,8 +21,9 @@
 @property (strong,nonatomic) NSDictionary *posts;
 @property (strong,nonatomic) NSMutableArray *post;
 
-@property (strong, nonatomic) UIActivityIndicatorView *mySpinner;
 
+
+@property (nonatomic, strong) IBOutlet UIActivityIndicatorView *myspinner;
 - (IBAction)forgotPasswordButtonClicked:(id)sender; 
 
 - (IBAction)backgroundTap:(id)sender;

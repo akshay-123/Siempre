@@ -8,12 +8,18 @@
 
 #import <UIKit/UIKit.h>
 
-@interface ChnagePasswordViewController : UIViewController
+@interface ChnagePasswordViewController : UIViewController<UIAlertViewDelegate>
 - (IBAction)changePasswordBtn:(id)sender;
 
 @property (strong,nonatomic) NSDictionary *posts;
 @property (strong,nonatomic) NSMutableArray *post;
 
+@property (weak, nonatomic) IBOutlet UITextField *currentpassword;
+
+@property (weak, nonatomic) IBOutlet UITextField *newpassword;
+@property (weak, nonatomic) IBOutlet UITextField *confirmPassword;
+
+- (IBAction)tapGesture:(id)sender;
 
 
 @end

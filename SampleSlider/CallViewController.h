@@ -9,19 +9,27 @@
 #import <UIKit/UIKit.h>
 #import "TCDevice.h"
 #import "callingVieController.h"
+#import <AddressBook/AddressBook.h>
+#import <AddressBookUI/AddressBookUI.h>
 
-@interface CallViewController : UIViewController<UIPickerViewDataSource,UIPickerViewDelegate>
+@interface CallViewController : UIViewController<UIPickerViewDataSource,UIPickerViewDelegate,UITextFieldDelegate,ABPeoplePickerNavigationControllerDelegate,UICollectionViewDataSource,UICollectionViewDelegate,TCDeviceDelegate,TCConnectionDelegate>
 {
-    UITextField* _numberField;
+    UITextField* textFields;
+
     NSString* phoneNumber;
     callingVieController *callingView;
     
   
 }
-
-/*@property (strong, nonatomic) IBOutlet UIButton *dailone;
-
-@property (weak, nonatomic) IBOutlet UIButton *dail2;
+- (IBAction)phoneContact:(id)sender;
+- (IBAction)additionSign:(id)sender;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *creditSpinner;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *minuteUsedSpinner;
+@property (weak, nonatomic) IBOutlet UIImageView *creditImg;
+@property (weak, nonatomic) IBOutlet UICollectionView *collectionView;
+@property (weak, nonatomic) IBOutlet UIImageView *creditUsedImg;
+@property (nonatomic, retain) ABPeoplePickerNavigationController *contacts;
+/*@property (weak, nonatomic) IBOutlet UIButton *dail2;
 
 
 @property (weak, nonatomic) IBOutlet UIButton *dail3;
@@ -53,6 +61,9 @@
 
 @property (weak, nonatomic) IBOutlet UIPickerView *picker;
 
+@property(strong, retain)IBOutlet TCDevice* phone;
+@property(strong, retain)IBOutlet TCConnection* phConnection;
+
 - (IBAction)tapGestureKeyboard:(id)sender;
 
 - (IBAction)countryCodePicker:(id)sender;
@@ -76,8 +87,17 @@
 - (IBAction)dialZero:(id)sender;
 - (IBAction)dialbackspace:(id)sender;
 
-- (IBAction)hidePicker:(id)sender;
+- (IBAction)hidePickerView:(id)sender;
+
+
+@property (strong,nonatomic)NSDictionary *detailsOfCallLogs;
 
 @property (weak, nonatomic) IBOutlet UIView *pickerViewContainer;
+
+@property (weak, nonatomic) IBOutlet UILabel *creditsBalance;
+
+@property (weak, nonatomic) IBOutlet UILabel *callCreditsUsed;
+
+@property(nonatomic,assign) id<TCConnectionDelegate> delegate;
 
 @end

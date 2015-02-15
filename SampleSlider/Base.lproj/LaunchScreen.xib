@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6245" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="13F34" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" launchScreen="YES" useTraitCollections="YES">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6238"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -10,11 +11,17 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="splashscreen.png" translatesAutoresizingMaskIntoConstraints="NO" id="UW8-YG-vgT">
+                <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="splashscreen.png" translatesAutoresizingMaskIntoConstraints="NO" id="UW8-YG-vgT">
                     <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                 </imageView>
             </subviews>
             <color key="backgroundColor" red="0.87702692859999998" green="1" blue="0.94120703439999998" alpha="1" colorSpace="calibratedRGB"/>
+            <constraints>
+                <constraint firstItem="UW8-YG-vgT" firstAttribute="top" secondItem="iN0-l3-epB" secondAttribute="top" id="8FW-z0-1aE"/>
+                <constraint firstAttribute="bottom" secondItem="UW8-YG-vgT" secondAttribute="bottom" id="L7F-BZ-Gw8"/>
+                <constraint firstItem="UW8-YG-vgT" firstAttribute="leading" secondItem="iN0-l3-epB" secondAttribute="leading" id="Nay-oH-MlM"/>
+                <constraint firstAttribute="trailing" secondItem="UW8-YG-vgT" secondAttribute="trailing" id="rRX-2r-FEo"/>
+            </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <point key="canvasLocation" x="548" y="455"/>

@@ -7,19 +7,26 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "TwilioClient.h"
+#import <AudioToolbox/AudioToolbox.h>
+#import <AVFoundation/AVFoundation.h>
 @class MonkeyPhone;
+@class Reachability;
 
 @interface AppDelegate : NSObject <UIApplicationDelegate>
 
-//@property (strong, nonatomic) UIWindow *window;
-
 {
     UIWindow* _window;
-    MonkeyPhone* _phone;
+    Reachability *internetReachability;
+    SystemSoundID mySound;
 }
 
-@property (nonatomic, retain) MonkeyPhone* phone;
+-(void)registrationForTwilio;
+-(void)outGoingCall;
+
 @property (nonatomic, retain) IBOutlet UIWindow* window;
+@property (nonatomic, strong)  TCDevice* phone;
+@property (nonatomic, strong)  TCConnection* phConnection;
 
 @end
 

@@ -10,13 +10,17 @@
 #import "AFNetworking.h"
 #import "DetailViewController.h"
 #import "MyCell.h"
+#import "MBProgressHUD.h"
 
 
-@interface MessageBoxTableViewController (){
+@interface MessageBoxTableViewController ()<MBProgressHUDDelegate>{
     
     NSMutableArray *phoneArray;
     NSMutableArray *bodyArray;
     NSArray *messages;
+    NSMutableArray *dateArray;
+    NSMutableArray *timeArray;
+    MBProgressHUD *HUD;
 }
 
 @property (strong,nonatomic)NSArray * messsages;
@@ -47,10 +51,38 @@
     // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
     // self.navigationItem.rightBarButtonItem = self.editButtonItem;
     
+//    [[UINavigationBar appearance]setBackgroundColor:[UIColor grayColor]];
+//    UIImageView* titleImage = [[UIImageView alloc] initWithFrame:CGRectMake(0, 0, 50, 40)];
+//    [titleImage setImage:[UIImage imageNamed:@"logo-siempre-transparent.png"]];
+//    self.navigationItem.titleView = titleImage;
+    
+    UIImageView *titleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo-siempre-transparent.png"]];
+    titleImageView.frame = CGRectMake(0, 0, 0, self.navigationController.navigationBar.frame.size.height); // Here I am passing
+    titleImageView.contentMode=UIViewContentModeScaleAspectFit;
+    self.navigationItem.titleView = titleImageView;
+    
+     //[[UINavigationBar appearance] setTintColor:[UIColor whiteColor]];
+    
     self.myTableView.delegate = self;
     self.myTableView.dataSource = self;
     phoneArray =[NSMutableArray new];
     bodyArray = [NSMutableArray new];
+    dateArray = [[NSMutableArray alloc] init];
+    timeArray = [[NSMutableArray alloc] init];
+    UIView *headerview = [[UIView alloc] initWithFrame:CGRectMake(0,0, 100, 80)];
+    headerview.backgroundColor =  [UIColor colorWithRed:(39/255.0) green:(48/255.0) blue:(56/255.0) alpha:alphaStage];
+    UISegmentedControl *segmentControl = [[UISegmentedControl alloc]initWithItems:@[@"INBOX",@"SENT"]];
+    // [segmentControl setSegmentedControlStyle:UISegmentedControlStyleBar];
+    [segmentControl addTarget:self action:@selector(segmentedControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
+    [segmentControl setSelectedSegmentIndex:0];
+    segmentControl.frame = CGRectMake(30, 30, 250, 30);
+    [headerview addSubview:segmentControl];
+    NSLog(@"Header View Size----%f",headerview.layer.frame.size.width);
+    self.tableView.tableHeaderView = headerview;
+    segmentControl.tintColor = [UIColor orangeColor];
+    segmentControl.layer.cornerRadius = 4;
+    segmentControl.backgroundColor = [UIColor whiteColor];
+
     [self inboxMessages];
 }
 
@@ -59,27 +91,137 @@
     // Dispose of any resources that can be recreated.
 }
 
+-(void)hudAssignment{
+    HUD = [MBProgressHUD showHUDAddedTo:self.navigationController.view animated:YES];
+    HUD.delegate = self;
+}
+
 -(void)inboxMessages
 {
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    NSString *userName = [defaults objectForKey:@"userName"];
+    
+    NSLog(@"username---->%@",userName);
+    
+    
+    NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/inboxMessageLogs?email_ID=%@",userName];
+    
+    NSURL *url = [NSURL URLWithString:serverAddress];
    
-    
-   
-
-    
-    NSURL *url = [NSURL URLWithString:@"http://192.168.2.106:8000/inboxMessageLogs?email_ID=g.bagul3%40gmail.com"];
-    
     NSURLRequest *request = [NSURLRequest requestWithURL:url];
     //AFNetworking asynchronous url request
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     operation.responseSerializer = [AFJSONResponseSerializer serializer];
     
     [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        
-        self.messsages = [responseObject objectForKey:@"messageLogArray"];
+        HUD.hidden =YES;
+        self.messsages = [[[responseObject objectForKey:@"messageLogArray"]reverseObjectEnumerator]allObjects];
         
         /*phoneArray = [[responseObject objectForKey:@"fields"]valueForKey:@"caller_ID"];
         bodyArray = [[responseObject objectForKey:@"fields"]valueForKey:@"body"];*/
         
+       
+        
+        NSDateFormatter *DateFormatter=[[NSDateFormatter alloc] init];
+        [DateFormatter setDateFormat:@"yyyy-MM-dd"];
+        NSString *dateString = [DateFormatter stringFromDate:[NSDate date]];
+        
+        NSDateComponents *components = [[NSDateComponents alloc] init] ;
+        [components setDay:-1];
+        
+        NSDate *yesterday = [[NSCalendar currentCalendar] dateByAddingComponents:components toDate:[NSDate date] options:0];
+        NSString *yesterdayDateStr = [DateFormatter stringFromDate:yesterday];
+
+        
+        
+        
+        for (NSDictionary *inbox in self.messsages) {
+            
+            NSDictionary *dict = [inbox valueForKey:@"fields"];
+            
+            
+            NSLog(@"Inside The LOOP---->%@",dict[@"callerid"]);
+            
+            NSString *callerid = [[inbox objectForKey:@"fields"]valueForKey:@"callerid"];
+            NSString* myNewString = [NSString stringWithFormat:@"%@", callerid];
+                [phoneArray addObject:myNewString];
+                [bodyArray addObject:dict[@"body"]];
+            NSString *dictVal = [[inbox objectForKey:@"fields"]valueForKey:@"time"];
+            NSArray* timestampStr = [dictVal componentsSeparatedByString: @" "];
+            NSString* day = [timestampStr objectAtIndex: 0];
+            NSString* time = [timestampStr objectAtIndex: 1];
+            
+            if([dateString isEqualToString:day]){
+                [dateArray addObject:@"Today"];
+            }else if([day isEqualToString:yesterdayDateStr]){
+                [dateArray addObject:@"Yesterday"];
+            }else{
+                [dateArray addObject:day];
+            }
+            [timeArray addObject:time];
+            
+        }
+                NSLog(@"Phone Array---->%@",dateArray);
+                NSLog(@"Body Array---->%@",timeArray);
+
+        
+        
+        
+        NSLog(@"The Array: %@",timeArray);
+        
+        
+        
+        [self.tableView reloadData];
+        
+    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+        
+        NSLog(@"Request Failed: %@, %@", error, error.userInfo);
+        
+    }];
+    
+    [operation start];
+    [self hudAssignment];
+    
+    
+}
+
+-(void)sendMessages
+{
+    
+    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    
+    NSString *userName = [defaults objectForKey:@"userName"];
+    NSLog(@"username---->%@",userName);
+    
+    
+    NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/sendMessageLogs?email_ID=%@",userName];
+    
+    NSURL *url = [NSURL URLWithString:serverAddress];
+    
+    
+    NSURLRequest *request = [NSURLRequest requestWithURL:url];
+    //AFNetworking asynchronous url request
+    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
+    operation.responseSerializer = [AFJSONResponseSerializer serializer];
+    NSLog(@"Response ------>%@",operation.responseSerializer);
+    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+        
+        HUD.hidden =YES;
+        self.messsages = [[[responseObject objectForKey:@"messageLogArray"]reverseObjectEnumerator]allObjects];
+        
+        
+        NSDateFormatter *DateFormatter=[[NSDateFormatter alloc] init];
+        [DateFormatter setDateFormat:@"yyyy-MM-dd"];
+        NSString *dateString = [DateFormatter stringFromDate:[NSDate date]];
+        
+        NSDateComponents *components = [[NSDateComponents alloc] init] ;
+        [components setDay:-1];
+        
+        NSDate *yesterday = [[NSCalendar currentCalendar] dateByAddingComponents:components toDate:[NSDate date] options:0];
+        NSString *yesterdayDateStr = [DateFormatter stringFromDate:yesterday];
         
         
         
@@ -89,71 +231,40 @@
             NSDictionary *dict = [inbox valueForKey:@"fields"];
             
             
-            NSLog(@"Inside The LOOP---->%@",dict[@"caller_ID"]);
-            
-                [phoneArray addObject:dict[@"caller_ID"]];
-                [bodyArray addObject:dict[@"body"]];
-            
-        }
-                NSLog(@"Phone Array---->%@",phoneArray);
-                NSLog(@"Body Array---->%@",bodyArray);
+            NSLog(@"Inside The LOOP---->%@",dict[@"callerid"]);
 
-        
-        //NSLog(@"The Array: %@",self.messsages);
-        
-        
-        
-        [self.tableView reloadData];
-        
-        
-        
-        
-    } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-        
-        NSLog(@"Request Failed: %@, %@", error, error.userInfo);
-        
-    }];
-    
-    [operation start];
-    
-}
-
--(void)sendMessages
-{
-    NSURL *url = [NSURL URLWithString:@"http://192.168.2.106:8000/sendMessageLogs/?email_ID=g.bagul3%40gmail.com"];
-    
-    NSURLRequest *request = [NSURLRequest requestWithURL:url];
-    //AFNetworking asynchronous url request
-    AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-    operation.responseSerializer = [AFJSONResponseSerializer serializer];
-    NSLog(@"Response ------>%@",operation.responseSerializer);
-    [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-        
-        self.messsages = [responseObject objectForKey:@"messageLogArray"];
-        
-        
-        for (NSDictionary *send in self.messsages) {
-            
-            NSDictionary *dict = [send valueForKey:@"fields"];
-            
-            [phoneArray addObject:dict[@"caller_ID"]];
+            NSString* callerId = [NSString stringWithFormat:@"%@", dict[@"callerid"]];
+            [phoneArray addObject:callerId];
             [bodyArray addObject:dict[@"body"]];
+            NSString *dictVal = [[inbox objectForKey:@"fields"]valueForKey:@"time"];
+            NSArray* timestampStr = [dictVal componentsSeparatedByString: @" "];
+            NSString* day = [timestampStr objectAtIndex: 0];
+            NSString* time = [timestampStr objectAtIndex: 1];
+            
+            if([dateString isEqualToString:day]){
+                [dateArray addObject:@"Today"];
+            }else if([day isEqualToString:yesterdayDateStr]){
+                [dateArray addObject:@"Yesterday"];
+            }else{
+                [dateArray addObject:day];
+            }
+            [timeArray addObject:time];
+            
         }
-        
-        
-
-        NSLog(@"Phone Array---->%@",phoneArray);
-        
-        NSLog(@"body Array---->%@",bodyArray);
-        NSLog(@"The Array: %@",self.messsages);
+        NSLog(@"Phone Array---->%@",dateArray);
+        NSLog(@"Body Array---->%@",timeArray);
         
         
         
+        
+        NSLog(@"The Array: %@",timeArray);
+        
+     
        [self.tableView reloadData];
-        
-        
-        
-        
+     
+     
+     
+     
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
         
         NSLog(@"Request Failed: %@, %@", error, error.userInfo);
@@ -161,6 +272,7 @@
     }];
     
     [operation start];
+    [self hudAssignment];
     
 }
 
@@ -196,18 +308,16 @@
         mycell = [[MyCell alloc]initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
     }
     
-    UIImage *receiveImage =[UIImage imageNamed:@"incomingImg.png"];
-    UIImage *sendImage =[UIImage imageNamed:@"outgoingImg.png"];
     
     NSString *str = [[tempDictionary objectForKey:@"fields"]valueForKey:@"type"];
     NSLog(@"Phone Array->-->-->-->%@",phoneArray);
-    mycell.phoneLabel.text = phoneArray [indexPath.row] ;
-    mycell.msgBody.text = bodyArray [indexPath.row];
-    if([[[tempDictionary objectForKey:@"fields"]valueForKey:@"type"]isEqualToString:@"inbox"]){
-            mycell.cellImage.image = receiveImage;
-    }else{
-        mycell.cellImage.image = sendImage;
-    }
+   
+    
+//    mycell.phoneLabel.text = [NSString stringWithFormat:@"%@",phoneArray[indexPath.row]];
+    mycell.phoneLabel.text = phoneArray[indexPath.row];
+    mycell.msgBody.text = bodyArray[indexPath.row];
+    mycell.date.text = dateArray[indexPath.row];
+    mycell.time.text = timeArray[indexPath.row];
     
     return mycell;
 }
@@ -266,19 +376,24 @@
     detailViewController.detailsOfMSg = [self.messsages objectAtIndex:indexPath.row];
 }
 
-
-
-
-- (IBAction)InboxAndSendSegmentBtn:(id)sender {
+-(void) segmentedControlValueDidChange:(UISegmentedControl *)segment{
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
-    if (InboxAndSend.selectedSegmentIndex == 0) {
+    if (segment.selectedSegmentIndex == 0) {
         NSLog(@"Inbox Clicked");
+        [defaults setObject:@"inbox" forKey:@"msgType"];
         [self inboxMessages];
+        
     } else {
         NSLog(@"Send Clicked");
+        
+        [defaults setObject:@"sent" forKey:@"msgType"];
         [self sendMessages];
         
     }
     
 }
+
+
+
 @end

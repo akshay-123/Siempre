@@ -12,4 +12,11 @@
 
 @property (strong,nonatomic)NSDictionary *detailsOfMSg;
 
+
+@property (weak, nonatomic) IBOutlet UIButton *reply;
+@property (weak, nonatomic) IBOutlet UIView *msgView;
+@property (weak, nonatomic) IBOutlet UILabel *msgType;
+@property (weak, nonatomic) IBOutlet UITextView *textView;
+
+
 @end

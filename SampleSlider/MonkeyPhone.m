@@ -12,7 +12,7 @@
     
     if ( self = [super init] )
     {
-        NSURL* url = [NSURL URLWithString:@"http://ecellmit.com/Smita/auth.php?clientName=MegaBytes"];
+        NSURL* url = [NSURL URLWithString:@"http://ecellmit.com/Smita/auth.php?clientName=Akshay"];
         NSLog(@"Connected to server...");
         NSURLResponse* response = nil;
         NSError* error = nil;
@@ -59,7 +59,7 @@
     NSDictionary* parameters = nil;
     if ( [phoneNumber length] > 0 )
     {
-        parameters = [NSDictionary dictionaryWithObject:phoneNumber forKey:@"PhoneNumber"];
+        parameters = [NSDictionary dictionaryWithObject:phoneNumber forKey:@"phoneNumber"];
     }
     _connection = [_device connect:parameters delegate:nil];
     //[_connection retain];

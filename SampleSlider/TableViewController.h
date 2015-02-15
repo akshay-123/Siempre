@@ -15,7 +15,13 @@
 - (IBAction)segmetedControllBtn:(id)sender;
 @property (strong, nonatomic) NSMutableArray* filteredTableData;
 
+@property (nonatomic, retain) NSMutableArray *dateArray;
+@property (nonatomic, retain) NSMutableArray *timeArray;
+@property (nonatomic, retain) NSMutableArray *callerIDArray;
 
+@property(strong,nonatomic)NSArray *dateArrayNew;
+@property(strong,nonatomic)NSArray *timeArrayNew;
+@property(strong,nonatomic)NSArray *callerIdArrayNew;
 
 @end
 	
