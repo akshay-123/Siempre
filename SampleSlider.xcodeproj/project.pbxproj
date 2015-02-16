@@ -1370,8 +1370,8 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
 				"CODE_SIGN_ENTITLEMENTS[sdk=*]" = "";
-				CODE_SIGN_IDENTITY = "iPhone Developer: Chris Rhoads (B3AW26QW2F)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Chris Rhoads (B3AW26QW2F)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Live Pulse Web Design, LLC (5QBKWD3CUT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Live Pulse Web Design, LLC (5QBKWD3CUT)";
 				COPY_PHASE_STRIP = YES;
 				INFOPLIST_FILE = SampleSlider/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
@@ -1386,7 +1386,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "d716b0ef-d8d9-4595-8bab-03469a01db07";
+				PROVISIONING_PROFILE = "33d26ed7-0d94-4a2c-91a8-08ea3cb57997";
 				VALIDATE_PRODUCT = YES;
 				VALID_ARCHS = "armv7 armv7s";
 			};
@@ -1401,8 +1401,8 @@
 				);
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_LAUNCHIMAGE_NAME = LaunchImage;
-				CODE_SIGN_IDENTITY = "iPhone Developer: Chris Rhoads (B3AW26QW2F)";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer: Chris Rhoads (B3AW26QW2F)";
+				CODE_SIGN_IDENTITY = "iPhone Distribution: Live Pulse Web Design, LLC (5QBKWD3CUT)";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution: Live Pulse Web Design, LLC (5QBKWD3CUT)";
 				INFOPLIST_FILE = SampleSlider/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1416,7 +1416,7 @@
 					"-ObjC",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				PROVISIONING_PROFILE = "d716b0ef-d8d9-4595-8bab-03469a01db07";
+				PROVISIONING_PROFILE = "33d26ed7-0d94-4a2c-91a8-08ea3cb57997";
 				VALID_ARCHS = "armv7 armv7s";
 			};
 			name = Release;

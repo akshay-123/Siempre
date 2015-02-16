@@ -3359,24 +3359,6 @@
             </objects>
             <point key="canvasLocation" x="-6936" y="-4805"/>
         </scene>
-        <!--View Controller-->
-        <scene sceneID="3ze-91-rra">
-            <objects>
-                <viewController id="WXf-fq-IkX" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="jlY-lE-aCd"/>
-                        <viewControllerLayoutGuide type="bottom" id="9Gw-9i-Lxh"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="hab-nP-fld">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
-                    </view>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="fAe-QG-2QN" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="-7111.5" y="-2561"/>
-        </scene>
         <!--Calling-->
         <scene sceneID="MRH-ZH-Lzz">
             <objects>
@@ -3461,8 +3443,7 @@
                                         <exclude reference="xwy-9L-c1K"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="1" y="310" width="320" height="35"/>
+                                <variation key="widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="ABv-gE-tzT"/>
                                         <exclude reference="EoQ-UA-dlV"/>
@@ -3484,8 +3465,7 @@
                                         <exclude reference="bEC-Ka-WSf"/>
                                     </mask>
                                 </variation>
-                                <variation key="widthClass=compact" misplaced="YES">
-                                    <rect key="frame" x="61" y="31" width="200" height="200"/>
+                                <variation key="widthClass=compact">
                                     <mask key="constraints">
                                         <include reference="OqK-Ed-Ory"/>
                                         <include reference="bEC-Ka-WSf"/>

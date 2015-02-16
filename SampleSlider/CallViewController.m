@@ -388,7 +388,7 @@
         AppDelegate *delegate = [UIApplication sharedApplication].delegate;
         NSDictionary *params = @{@"phoneNumber": self.numberField.text,@"email_ID":userName,@"callLimit":creditsBalance.text};
         _connection = [delegate.phone connect:params delegate:self];
-        
+        [defaults setObject:false forKey:@"missedCalledStatus"];
         
         //AppDelegate *delegate = [UIApplication sharedApplication].delegate;
     //delegate.phConnection = [delegate.phone connect:params delegate:nil];

@@ -106,35 +106,7 @@
         NSString *Sender = notificationMessage[@"Sender"];
         NSString *message = notificationMessage[@"alert"];
         
-        
-                
-        
-//        NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/receiveMessage?Receiver_ID=%@&caller_ID=%@&time=%@&type=inbox&body=%@",[receiver stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[Sender stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[time stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[message stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-//        
-//       
-//        NSURL *url = [NSURL URLWithString:serverAddress];
-//        
-//        
-//        NSURLRequest *request = [NSURLRequest requestWithURL:url];
-//        //AFNetworking asynchronous url request
-//        AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-//        operation.responseSerializer = [AFJSONResponseSerializer serializer];
-//        
-//        [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-//            
-//            
-//            
-//            //[[NSNotificationCenter defaultCenter]postNotificationName:@"handleNotification" object:nil];
-//            
-//            NSLog(@"Received Messsage Save");
-//        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//            
-//            NSLog(@"Received Not Messsage Save");
-//            
-//        }];
-//        
-//        [operation start];
-        
+    
         NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/receiveMessage?Receiver_ID=%@&caller_ID=%@&time=%@&type=inbox&body=%@",[receiver stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[Sender stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[time stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[message stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
         NSLog(@"Server Address----->%@",serverAddress);
         
@@ -149,7 +121,7 @@
          } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
              NSLog(@"Receive Not Msg saved");
          }];
-        
+ 
 
 
     }
@@ -181,27 +153,6 @@
          } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
              NSLog(@"Receive Not Msg saved");
          }];
-
-        
-        
-        
-        
-        
-        
-//        //AFNetworking asynchronous url request
-//        AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
-//        operation.responseSerializer = [AFJSONResponseSerializer serializer];
-//        
-//        [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
-//        
-//            NSLog(@"Received Messsage Save");
-//        } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//            
-//            NSLog(@"Received Not Messsage Save");
-//            
-//        }];
-//        
-//        [operation start];
 
     }
     
@@ -285,6 +236,12 @@
     [[NSNotificationCenter defaultCenter]
      postNotificationName:@"receiveDismissCallScreen"
      object:self];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString *missedCallStatus = [defaults objectForKey:@"missedCalledStatus"];
+    if(!(missedCallStatus == false)){
+        NSLog(@"Missed Call....");
+    }
+    
 }
 
 - (void)deviceDidStartListeningForIncomingConnections:(TCDevice*)device
