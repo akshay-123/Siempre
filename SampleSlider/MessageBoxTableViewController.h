@@ -9,7 +9,7 @@
 #import <UIKit/UIKit.h>
 
 @interface MessageBoxTableViewController : UITableViewController <UITableViewDataSource,UITableViewDelegate>
-@property (weak, nonatomic) IBOutlet UISegmentedControl *InboxAndSend;
+
 - (IBAction)InboxAndSendSegmentBtn:(id)sender;
 
 @property (strong, nonatomic) IBOutlet UITableView *myTableView;

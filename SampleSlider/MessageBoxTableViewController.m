@@ -11,6 +11,7 @@
 #import "DetailViewController.h"
 #import "MyCell.h"
 #import "MBProgressHUD.h"
+#import "HomeViewController.h"
 
 
 @interface MessageBoxTableViewController ()<MBProgressHUDDelegate>{
@@ -29,7 +30,7 @@
 
 @implementation MessageBoxTableViewController
 
-@synthesize InboxAndSend,myTableView;
+@synthesize myTableView;
 
 
 - (id)initWithStyle:(UITableViewStyle)style
@@ -69,19 +70,24 @@
     bodyArray = [NSMutableArray new];
     dateArray = [[NSMutableArray alloc] init];
     timeArray = [[NSMutableArray alloc] init];
-    UIView *headerview = [[UIView alloc] initWithFrame:CGRectMake(0,0, 100, 80)];
+    UIView *headerview = [[UIView alloc] initWithFrame:CGRectMake(0,0,self.view.layer.frame.size.width, 80)];
     headerview.backgroundColor =  [UIColor colorWithRed:(39/255.0) green:(48/255.0) blue:(56/255.0) alpha:alphaStage];
     UISegmentedControl *segmentControl = [[UISegmentedControl alloc]initWithItems:@[@"INBOX",@"SENT"]];
     // [segmentControl setSegmentedControlStyle:UISegmentedControlStyleBar];
     [segmentControl addTarget:self action:@selector(segmentedControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
     [segmentControl setSelectedSegmentIndex:0];
-    segmentControl.frame = CGRectMake(30, 30, 250, 30);
+    NSLog(@"Width ------%f",self.view.layer.frame.size.width);
+     segmentControl.frame = CGRectMake((((headerview.layer.frame.size.width)/2)-125),(((headerview.layer.frame.size.height)/100)*30), 250, 30);
     [headerview addSubview:segmentControl];
     NSLog(@"Header View Size----%f",headerview.layer.frame.size.width);
+    NSLog(@"Self View Size----%f",self.view.layer.frame.size.width);
+
     self.tableView.tableHeaderView = headerview;
     segmentControl.tintColor = [UIColor orangeColor];
     segmentControl.layer.cornerRadius = 4;
     segmentControl.backgroundColor = [UIColor whiteColor];
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:@"inbox" forKey:@"msgType"];
 
     [self inboxMessages];
 }
@@ -106,7 +112,7 @@
     NSLog(@"username---->%@",userName);
     
     
-    NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/inboxMessageLogs?email_ID=%@",userName];
+    NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"inboxMessageLogs?email_ID=%@",userName]];
     
     NSURL *url = [NSURL URLWithString:serverAddress];
    
@@ -135,33 +141,35 @@
         NSString *yesterdayDateStr = [DateFormatter stringFromDate:yesterday];
 
         
-        
+        phoneArray = [[NSMutableArray alloc] init];
+        bodyArray = [[NSMutableArray alloc] init];
+        dateArray = [[NSMutableArray alloc]init];
+        timeArray = [[NSMutableArray alloc]init];
         
         for (NSDictionary *inbox in self.messsages) {
             
             NSDictionary *dict = [inbox valueForKey:@"fields"];
-            
-            
-            NSLog(@"Inside The LOOP---->%@",dict[@"callerid"]);
-            
-            NSString *callerid = [[inbox objectForKey:@"fields"]valueForKey:@"callerid"];
-            NSString* myNewString = [NSString stringWithFormat:@"%@", callerid];
+            if([dict[@"type"]isEqualToString:@"inbox"]){
+                NSLog(@"Inside The LOOP---->%@",dict[@"callerid"]);
+                
+                NSString *callerid = [[inbox objectForKey:@"fields"]valueForKey:@"callerid"];
+                NSString* myNewString = [NSString stringWithFormat:@"%@", callerid];
                 [phoneArray addObject:myNewString];
                 [bodyArray addObject:dict[@"body"]];
-            NSString *dictVal = [[inbox objectForKey:@"fields"]valueForKey:@"time"];
-            NSArray* timestampStr = [dictVal componentsSeparatedByString: @" "];
-            NSString* day = [timestampStr objectAtIndex: 0];
-            NSString* time = [timestampStr objectAtIndex: 1];
-            
-            if([dateString isEqualToString:day]){
-                [dateArray addObject:@"Today"];
-            }else if([day isEqualToString:yesterdayDateStr]){
-                [dateArray addObject:@"Yesterday"];
-            }else{
-                [dateArray addObject:day];
+                NSString *dictVal = [[inbox objectForKey:@"fields"]valueForKey:@"time"];
+                NSArray* timestampStr = [dictVal componentsSeparatedByString: @" "];
+                NSString* day = [timestampStr objectAtIndex: 0];
+                NSString* time = [timestampStr objectAtIndex: 1];
+                
+                if([dateString isEqualToString:day]){
+                    [dateArray addObject:@"Today"];
+                }else if([day isEqualToString:yesterdayDateStr]){
+                    [dateArray addObject:@"Yesterday"];
+                }else{
+                    [dateArray addObject:day];
+                }
+                [timeArray addObject:time];
             }
-            [timeArray addObject:time];
-            
         }
                 NSLog(@"Phone Array---->%@",dateArray);
                 NSLog(@"Body Array---->%@",timeArray);
@@ -197,7 +205,7 @@
     NSLog(@"username---->%@",userName);
     
     
-    NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/sendMessageLogs?email_ID=%@",userName];
+    NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"sendMessageLogs?email_ID=%@",userName]];
     
     NSURL *url = [NSURL URLWithString:serverAddress];
     
@@ -225,35 +233,41 @@
         
         
         
+        phoneArray = [[NSMutableArray alloc] init];
+        bodyArray = [[NSMutableArray alloc] init];
+        dateArray = [[NSMutableArray alloc]init];
+        timeArray = [[NSMutableArray alloc]init];
         
         for (NSDictionary *inbox in self.messsages) {
             
-            NSDictionary *dict = [inbox valueForKey:@"fields"];
-            
-            
-            NSLog(@"Inside The LOOP---->%@",dict[@"callerid"]);
-
-            NSString* callerId = [NSString stringWithFormat:@"%@", dict[@"callerid"]];
-            [phoneArray addObject:callerId];
-            [bodyArray addObject:dict[@"body"]];
-            NSString *dictVal = [[inbox objectForKey:@"fields"]valueForKey:@"time"];
-            NSArray* timestampStr = [dictVal componentsSeparatedByString: @" "];
-            NSString* day = [timestampStr objectAtIndex: 0];
-            NSString* time = [timestampStr objectAtIndex: 1];
-            
-            if([dateString isEqualToString:day]){
-                [dateArray addObject:@"Today"];
-            }else if([day isEqualToString:yesterdayDateStr]){
-                [dateArray addObject:@"Yesterday"];
-            }else{
-                [dateArray addObject:day];
+            if([[[inbox objectForKey:@"fields"]valueForKey:@"type"] isEqualToString:@"sentbox"]){
+                NSDictionary *dict = [inbox valueForKey:@"fields"];
+                
+                
+                NSLog(@"Inside The LOOP---->%@",dict[@"callerid"]);
+                
+                NSString *callerid = dict[@"callerid"];
+                NSString* myNewString = [NSString stringWithFormat:@"%@", callerid];
+                [phoneArray addObject:myNewString];
+                [bodyArray addObject:dict[@"body"]];
+                NSString *dictVal = [[inbox objectForKey:@"fields"]valueForKey:@"time"];
+                NSArray* timestampStr = [dictVal componentsSeparatedByString: @" "];
+                NSString* day = [timestampStr objectAtIndex: 0];
+                NSString* time = [timestampStr objectAtIndex: 1];
+                
+                if([dateString isEqualToString:day]){
+                    [dateArray addObject:@"Today"];
+                }else if([day isEqualToString:yesterdayDateStr]){
+                    [dateArray addObject:@"Yesterday"];
+                }else{
+                    [dateArray addObject:day];
+                }
+                [timeArray addObject:time];
             }
-            [timeArray addObject:time];
             
         }
-        NSLog(@"Phone Array---->%@",dateArray);
-        NSLog(@"Body Array---->%@",timeArray);
-        
+
+    
         
         
         

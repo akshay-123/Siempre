@@ -12,6 +12,7 @@
 #import "DateAndTimeTableViewCell.h"
 #import "MBProgressHUD.h"
 #import "CallViewController.h"
+#import "HomeViewController.h"
 
 @interface TableViewController ()<MBProgressHUDDelegate>{
     
@@ -81,13 +82,16 @@
     
     [self callLogs];
     
-    UIView *headerview = [[UIView alloc] initWithFrame:CGRectMake(0,0, 100, 80)];
+    UIView *headerview = [[UIView alloc] initWithFrame:CGRectMake(0,0, self.view.layer.frame.size.width, 80)];
     headerview.backgroundColor = [UIColor colorWithRed:(39/255.0) green:(48/255.0) blue:(56/255.0) alpha:alphaStage];
     UISegmentedControl *segmentControl = [[UISegmentedControl alloc]initWithItems:@[@"ALL",@"MISSED"]];
    // [segmentControl setSegmentedControlStyle:UISegmentedControlStyleBar];
     [segmentControl addTarget:self action:@selector(segmentedControlValueDidChange:) forControlEvents:UIControlEventValueChanged];
     [segmentControl setSelectedSegmentIndex:0];
-    segmentControl.frame = CGRectMake(30, 30, 250, 30);
+    NSLog(@"self.view.layer.frame.size.width-->%f",self.view.layer.frame.size.width);
+    NSLog(@"self.view.layer.frame.size.width-->%f",self.view.layer.frame.size.height);
+    
+    segmentControl.frame = CGRectMake((((headerview.layer.frame.size.width)/2)-125),(((headerview.layer.frame.size.height)/100)*30), 250, 30);
     [headerview addSubview:segmentControl];
     segmentControl.tintColor = [UIColor orangeColor];
     segmentControl.layer.cornerRadius = 4;
@@ -140,7 +144,7 @@
     NSLog(@"username---->%@",userName);
     
     
-    NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/callLogs?email_ID=%@",userName];
+    NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"callLogs?email_ID=%@",userName]];
     
     NSURL *url = [NSURL URLWithString:serverAddress];
     
@@ -223,7 +227,7 @@
     
     NSString *userName = [defaults objectForKey:@"userName"];
     
-    NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/missedCallLogs?email_ID=%@",userName];
+    NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"missedCallLogs?email_ID=%@",userName]];
     
     NSURL *url = [NSURL URLWithString:serverAddress];
 

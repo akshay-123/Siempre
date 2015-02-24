@@ -8,13 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import "TwilioClient.h"
-
+int timerCount;
 @interface callingVieController : UIViewController<TCDeviceDelegate,TCConnectionDelegate>{
     UITextField *calledNumber;
+    NSTimer *timerNew;
 }
 @property (retain, nonatomic) IBOutlet UILabel *calledPhoneNumber;
 @property (retain,nonatomic) IBOutlet UITextField *calledNumber;
-@property (weak, nonatomic) IBOutlet UILabel *displayTimer;
+@property (strong, nonatomic) IBOutlet UILabel *displayTimer;
 
 - (IBAction)callEndBtn:(id)sender;
 -(void)timer;

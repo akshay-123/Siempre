@@ -16,6 +16,7 @@
 #import "UIViewController+AMSlideMenu.h"
 #import "ReceveingCallerScreenViewController.h"
 #import "Reachability.h"
+#import "HomeViewController.h"
 #import <AVFoundation/AVFoundation.h>
 
 
@@ -107,7 +108,7 @@
         NSString *message = notificationMessage[@"alert"];
         
     
-        NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/receiveMessage?Receiver_ID=%@&caller_ID=%@&time=%@&type=inbox&body=%@",[receiver stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[Sender stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[time stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[message stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"receiveMessage?Receiver_ID=%@&caller_ID=%@&time=%@&type=inbox&body=%@",[receiver stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[Sender stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[time stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[message stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
         NSLog(@"Server Address----->%@",serverAddress);
         
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
@@ -139,7 +140,7 @@
         
         
         
-        NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/receiveMessage?Receiver_ID=%@&caller_ID=%@&time=%@&type=inbox&body=%@",[receiver stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[Sender stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[time stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[message stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSString  *serverAddress =[URL_LINk stringByAppendingString:[NSString stringWithFormat:@"receiveMessage?Receiver_ID=%@&caller_ID=%@&time=%@&type=inbox&body=%@",[receiver stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[Sender stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[time stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[message stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
         NSLog(@"Server Address----->%@",serverAddress);
         
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
@@ -169,7 +170,7 @@
 -(void)registrationForTwilio{
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *userName = [defaults objectForKey:@"userName"];
-    NSString *urlString = [NSString stringWithFormat:@"http://54.174.166.2/generate_token/?email_ID=%@",userName];
+    NSString *urlString = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"generate_token/?email_ID=%@",userName]];
     NSURL *url1 = [NSURL URLWithString:urlString];
     NSError *error = nil;
     NSString *token = [NSString stringWithContentsOfURL:url1 encoding:NSUTF8StringEncoding error:&error];
@@ -204,6 +205,7 @@
     NSUserDefaults *incomingPhNumber = [NSUserDefaults standardUserDefaults];
     [incomingPhNumber setObject:[connection parameters][@"From"] forKey:@"incomingNumber"];
     NSLog(@"Incoming Number------>%@",[connection parameters][@"From"]);
+    [incomingPhNumber setObject:[connection parameters][@"From"] forKey:@"incomingNo"];
     //storedViewController = self.window.rootViewController;
     
     //self.window.rootViewController = [self.window.rootViewController.storyboard instantiateViewControllerWithIdentifier:@"ReceivingCall"];
@@ -237,9 +239,31 @@
      postNotificationName:@"receiveDismissCallScreen"
      object:self];
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSString * userName = [defaults objectForKey:@"userName"];
     NSString *missedCallStatus = [defaults objectForKey:@"missedCalledStatus"];
-    if(!(missedCallStatus == false)){
-        NSLog(@"Missed Call....");
+   
+    NSDateFormatter *DateFormatter=[[NSDateFormatter alloc] init];
+    [DateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
+    NSString *startTime = [DateFormatter stringFromDate:[NSDate date]];
+    NSString *displayTimer = [defaults objectForKey:@"displayTimer"];
+    NSString *calledNumber = [defaults objectForKey:@"incomingNo"];
+    [defaults removeObjectForKey:@"missedCalledStatus"];
+    
+    if([missedCallStatus isEqualToString:@"true"]){
+        NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"update_call_log?email_ID=%@&time=%@&duration=%@&caller_ID=%@&type=missed",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[startTime stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[displayTimer stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[calledNumber stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
+
+        NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:serverAddress]];
+        
+        NSData *theData = [NSURLConnection sendSynchronousRequest:request
+                                                returningResponse:nil
+                                                            error:nil];
+        
+        NSDictionary *newJSON = [NSJSONSerialization JSONObjectWithData:theData
+                                                                options:0
+                                                                  error:nil];
+        
+       
+        
     }
     
 }
@@ -272,6 +296,17 @@
   
     
 }
+- (BOOL)shouldAutorotate {
+       return NO;
+}
+
+- (BOOL) shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation
+{
+    //	(iOS 5)
+    //	Only allow rotation to portrait
+    return (toInterfaceOrientation == UIInterfaceOrientationPortrait);
+}
+
 
 -(void)doSomething{
     NSLog(@"background");

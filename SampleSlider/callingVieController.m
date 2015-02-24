@@ -12,6 +12,7 @@
 #import "AFNetworking.h"
 #import "CallViewController.h"
 #import "TableViewController.h"
+#import "HomeViewController.h"
 
 
 @interface callingVieController ()<TCDeviceDelegate,TCConnectionDelegate>
@@ -25,6 +26,7 @@
     NSString *startTime;
     NSString *userName;
     NSString *token;
+    NSString *displayTimerStatus;
 }
 @synthesize calledPhoneNumber,calledNumber,displayTimer;
 - (void)viewDidLoad {
@@ -32,50 +34,56 @@
     // Do any additional setup after loading the view.jjjsw37e1`
     UIDevice *device = [UIDevice currentDevice];
     device.proximityMonitoringEnabled = YES;
+    
+   [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(dailerView) name:@"dailerView" object:nil];
 
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     calledNumber.text = [defaults objectForKey:@"calledPhoneNumber"];
-    self.displayTimer.text = @"00.00";
+    self.displayTimer.text = @"00:00";
     start = false;
     self.displayTimer.hidden = NO;
-    
     if (start == false) {
         start = true;
         
-        time = [NSDate timeIntervalSinceReferenceDate];
         [self update];
         
     }else{
         
         start = false;
     }
-    
+   
   }
 
 
 -(void)update{
+    int minutes;
     if (start == false) {
         return;
-    }
-    NSTimeInterval currebtTime = [NSDate timeIntervalSinceReferenceDate];
-    NSTimeInterval elappedTime = currebtTime -time;
-    
-    int minutes = (int)(elappedTime / 60.0);
-    int seconds = (int)(elappedTime - (minutes*60));
-    
-    self.displayTimer.text = [NSString stringWithFormat:@"%02u:%02u",minutes,seconds];
-    
-    [self performSelector:@selector(update) withObject:self afterDelay:0.1];
-    
-    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString *credits = [defaults objectForKey:@"credits"];
-    
-    if([credits integerValue] == minutes){
-        AppDelegate *delegate =[UIApplication sharedApplication].delegate;
-        [delegate.phone disconnectAll];
-        [self dismissViewControllerAnimated:true completion:nil];
-
+    }else{
+        displayTimer.hidden = YES;
+        if([displayTimerStatus isEqualToString:@"YES"]){
+            displayTimer.hidden = NO;
+            NSTimeInterval currebtTime = [NSDate timeIntervalSinceReferenceDate];
+            NSTimeInterval elappedTime = currebtTime -time;
+            
+             minutes= (int)(elappedTime / 60.0);
+            int seconds = (int)(elappedTime - (minutes*60));
+            
+            self.displayTimer.text = [NSString stringWithFormat:@"%02u:%02u",minutes,seconds];
+        }
+        [self performSelector:@selector(update) withObject:self afterDelay:0.1];
+        
+        NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+        NSString *credits = [defaults objectForKey:@"credits"];
+        
+        if([credits integerValue] == minutes){
+            AppDelegate *delegate =[UIApplication sharedApplication].delegate;
+            [delegate.phone disconnectAll];
+            [self dismissViewControllerAnimated:true completion:nil];
+            
+        }
+        
     }
     
 }
@@ -107,6 +115,7 @@
 
 
 - (IBAction)callEndBtn:(id)sender {
+    start = false;
     
     [self dismissViewControllerAnimated:true completion:nil];
     
@@ -128,9 +137,11 @@
     NSDateFormatter *DateFormatter=[[NSDateFormatter alloc] init];
     [DateFormatter setDateFormat:@"yyyy-MM-dd HH:mm"];
     startTime = [DateFormatter stringFromDate:[NSDate date]];
+    [defaults setObject:self.displayTimer.text forKey:@"displayTimer"];
+    [defaults setObject:calledNumber.text forKey:@"calledNumber"];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/update_call_log?email_ID=%@&time=%@&duration=%@&caller_ID=%@&type=dialed",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[startTime stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.displayTimer.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[calledNumber.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSString  *serverAddress =[URL_LINk stringByAppendingString:[NSString stringWithFormat:@"update_call_log?email_ID=%@&time=%@&duration=%@&caller_ID=%@&type=dialed",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[startTime stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.displayTimer.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[calledNumber.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
     NSLog(@"startTime------>%@",serverAddress);
     [manager GET:serverAddress parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
@@ -164,5 +175,11 @@
     NSLog(@"Connecting........");
 }
 
+-(void)dailerView{
+    NSLog(@"Dailer View");
+    displayTimerStatus =@"YES";
+    time = [NSDate timeIntervalSinceReferenceDate];
+
+}
 
 @end

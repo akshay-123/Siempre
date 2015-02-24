@@ -7,7 +7,7 @@
 //
 
 #import "ViewController.h"
-
+#define URL_LINk @"http://52.1.17.23/"
 @interface HomeViewController : ViewController
 - (IBAction)homeTextView:(id)sender;
 

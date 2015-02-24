@@ -10,6 +10,7 @@
 #import "AppDelegate.h"
 #import "MonkeyPhone.h"
 #import <AVFoundation/AVFoundation.h>
+#import "HomeViewController.h"
 #import "AFNetworking.h"
 
 @interface ReceveingCallerScreenViewController ()<TCDeviceDelegate,TCConnectionDelegate>
@@ -61,6 +62,8 @@
     NSLog(@"Incoming Number On The Screen ------->%@",incomingNumber);
     incomingPhNumber.text = incomingNumber;
     //[[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(removeViewNotification:) name:@"dismissReveiverViewControll" object:nil];
+    NSUserDefaults *defaultsStr = [NSUserDefaults standardUserDefaults];
+    [defaultsStr setObject:@"true" forKey:@"missedCalledStatus"];
 
     
     
@@ -125,7 +128,7 @@
     startTime = [DateFormatter stringFromDate:[NSDate date]];
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/update_call_log?email_ID=%@&time=%@&duration=%@&caller_ID=%@&type=missed",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[startTime stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.displayTimer.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[incomingNumber stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"update_call_log?email_ID=%@&time=%@&duration=%@&caller_ID=%@&type=missed",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[startTime stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.displayTimer.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[incomingNumber stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
     NSLog(@"startTime------>%@",serverAddress);
      [manager GET:serverAddress parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
@@ -154,7 +157,7 @@
         startTime = [DateFormatter stringFromDate:[NSDate date]];
         
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-        NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/update_call_log?email_ID=%@&time=%@&duration=%@&caller_ID=%@&type=missed",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[startTime stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.displayTimer.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[incomingNumber stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"update_call_log?email_ID=%@&time=%@&duration=%@&caller_ID=%@&type=missed",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[startTime stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.displayTimer.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[incomingNumber stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
         
         NSLog(@"startTime------>%@",serverAddress);
         [manager GET:serverAddress parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
@@ -189,6 +192,9 @@
     startTime = [DateFormatter stringFromDate:[NSDate date]];
     NSLog(@"DateString---->%@",startTime);
     callStatus =@"true";
+    NSUserDefaults *defaultsStr = [NSUserDefaults standardUserDefaults];
+    [defaultsStr setObject:@"true" forKey:@"missedCalledStatus"];
+
     
     self.displayTimer.hidden = NO;
     if (start == false) {
@@ -204,7 +210,7 @@
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     
-    NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/update_call_log?email_ID=%@&time=%@&duration=%@&caller_ID=%@&type=received",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[startTime stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.displayTimer.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.incomingPhNumber.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+    NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"update_call_log?email_ID=%@&time=%@&duration=%@&caller_ID=%@&type=received",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[startTime stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.displayTimer.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[self.incomingPhNumber.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
     
     NSLog(@"startTime------>%@",serverAddress);
     [manager GET:serverAddress parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)

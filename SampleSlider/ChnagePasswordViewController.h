@@ -7,8 +7,9 @@
 //
 
 #import <UIKit/UIKit.h>
+#import "MBProgressHUD.h"
 
-@interface ChnagePasswordViewController : UIViewController<UIAlertViewDelegate>
+@interface ChnagePasswordViewController : UIViewController<UIAlertViewDelegate,MBProgressHUDDelegate>
 - (IBAction)changePasswordBtn:(id)sender;
 
 @property (strong,nonatomic) NSDictionary *posts;

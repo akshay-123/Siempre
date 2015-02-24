@@ -8,6 +8,7 @@
 
 #import "ChangePasswordAndLogOutViewController.h"
 #import "AFNetworking.h"
+#import "HomeViewController.h"
 
 @interface ChangePasswordAndLogOutViewController ()
 
@@ -59,7 +60,7 @@
         NSUserDefaults * defs = [NSUserDefaults standardUserDefaults];
         NSString *userName = [defs objectForKey:@"userName"];
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-        NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/appLogout?email_ID=%@",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"appLogout?email_ID=%@",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
         [manager GET:serverAddress parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
          {
               NSLog(@"Logout");

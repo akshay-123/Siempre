@@ -8,6 +8,8 @@
 
 #import "ChnagePasswordViewController.h"
 #import "AFNetworking.h"
+#import "HomeViewController.h"
+#import "MBProgressHUD.h"
 @interface ChnagePasswordViewController ()
 
 @end
@@ -44,25 +46,29 @@
 
 - (IBAction)changePasswordBtn:(id)sender {
     
-    
-    
-    
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+    hud.delegate = self;
+       
     if ([currentpassword.text isEqualToString:@""]) {
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please enter the Current Password" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         alert.tag =1;
         [alert show];
     } else if ([newpassword.text isEqualToString:@"" ]){
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please enter the New Password" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         alert.tag =2;
         [alert show];
     }else if ([confirmPassword.text isEqualToString:@""]){
         
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please enter the Confirm Password" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         alert.tag = 3;
         [alert show];
     }else if (![newpassword.text isEqualToString:confirmPassword.text]){
         
-        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:@"Passwords do not match." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Error!" message:@"Passwords mismatch." delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         alert.tag = 4;
         [alert show];
     }else{
@@ -79,7 +85,7 @@
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     
-    NSString *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/changePassword?email_ID=%@&currentPassword=%@&newPassword=%@",userName,currentpassword.text,newpassword.text];
+    NSString *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"changePassword?email_ID=%@&currentPassword=%@&newPassword=%@",userName,currentpassword.text,newpassword.text]];
     
     
     [manager GET:serverAddress parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
@@ -95,12 +101,14 @@
          {
              UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Password Changed Sucessfully" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
              alert.tag = 5;
+             [MBProgressHUD hideHUDForView:self.view animated:YES];
              [alert show];
              
          }else{
              
-             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Password Not Changed" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Password mismatch" delegate:self cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
              alert.tag = 6;
+             [MBProgressHUD hideHUDForView:self.view animated:YES];
              [alert show];
          }
          
@@ -123,7 +131,7 @@
     {
         NSLog(@"Alert Clicked");
         UIStoryboard *mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-        UIViewController *vc = [mainStoryBoard instantiateViewControllerWithIdentifier:@"navigationMainController"];
+        UIViewController *vc = [mainStoryBoard instantiateViewControllerWithIdentifier:@"SignInMainStoryBoard"];
         [self presentViewController:vc animated:YES completion:nil ];
 
     }

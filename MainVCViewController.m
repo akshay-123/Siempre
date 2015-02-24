@@ -10,6 +10,7 @@
 #import "AFNetworking.h"
 #import "AppDelegate.h"
 #import "Reachability.h"
+#import "HomeViewController.h"
 
 
 @interface MainVCViewController ()
@@ -47,7 +48,7 @@
     } else {
         NSLog(@"There IS internet connection");
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-        NSString *url = [NSString stringWithFormat:@"http://54.174.166.2/getLoginStatus?email_ID=%@",userName];
+        NSString *url = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"getLoginStatus?email_ID=%@",userName]];
         
         [manager GET:url parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
          {
@@ -67,7 +68,7 @@
          }];
 
     }
-    
+    self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     
     
     

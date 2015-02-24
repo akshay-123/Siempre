@@ -1,4 +1,4 @@
-//
+ //
 //  CallViewController.m
 //  SampleSlider
 //
@@ -15,6 +15,7 @@
 #import "TCConnectionDelegate.h"
 #import "Reachability.h"
 #import "customViewCell.h"
+#import "HomeViewController.h"
 
 @interface CallViewController ()<TCDeviceDelegate,TCConnectionDelegate>{
    //TCDevice* _phone;
@@ -54,6 +55,7 @@
     [titleImage setImage:[UIImage imageNamed:@"logo-siempre-transparent.png"]];
     self.navigationItem.titleView = titleImage;*/
     
+        
     UIImageView *titleImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"logo-siempre-transparent.png"]];
     titleImageView.frame = CGRectMake(0, 0, 0, self.navigationController.navigationBar.frame.size.height); // Here I am passing
     titleImageView.contentMode=UIViewContentModeScaleAspectFit;
@@ -192,7 +194,7 @@
         [alert show];
     }else{
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-        NSString *url =[NSString stringWithFormat:@"http://54.174.166.2/getCallCredits?email_ID=%@",username];
+        NSString *url =[URL_LINk stringByAppendingString:[NSString stringWithFormat:@"getCallCredits?email_ID=%@",username]];
         [manager GET:url parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
          {
              creditsBalance.text = [[responseObject objectForKey:@"creditsBalance"]valueForKey:@"credits_balance"];
@@ -232,14 +234,14 @@
     //self.view.frame.size.width-(30)
     //imageView.frame = CGRectMake(0, 0, 40, );
     //self.navigationItem.titleView = imageView;
-    
+       
 }
 
 -(void)viewDidAppear:(BOOL)animated{
     [super viewDidAppear:animated];
      NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-    NSString *url =[NSString stringWithFormat:@"http://54.174.166.2/getCallCredits?email_ID=%@",username];
+    NSString *url =[URL_LINk stringByAppendingString:[NSString stringWithFormat:@"getCallCredits?email_ID=%@",username]];
     [manager GET:url parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
      {
          creditsBalance.text = [[responseObject objectForKey:@"creditsBalance"]valueForKey:@"credits_balance"];
@@ -253,6 +255,7 @@
          }
          if ([callCreditsUsed.text intValue] < 0) {
              callCreditsUsed.text =@"0";
+             
          }
          
          [defaults setValue:creditsBalance.text forKey:@"credits"];
@@ -363,6 +366,8 @@
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     
     [defaults setObject:numberField.text forKey:@"calledPhoneNumber"];
+    [defaults setObject:@"false" forKey:@"missedCalledStatus"];
+
     
     if([creditsBalance.text isEqualToString:@"0"]){
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"You have run out of minutes. Please purchase more credits" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
@@ -388,7 +393,6 @@
         AppDelegate *delegate = [UIApplication sharedApplication].delegate;
         NSDictionary *params = @{@"phoneNumber": self.numberField.text,@"email_ID":userName,@"callLimit":creditsBalance.text};
         _connection = [delegate.phone connect:params delegate:self];
-        [defaults setObject:false forKey:@"missedCalledStatus"];
         
         //AppDelegate *delegate = [UIApplication sharedApplication].delegate;
     //delegate.phConnection = [delegate.phone connect:params delegate:nil];
@@ -464,7 +468,7 @@
 
 - (void)dialClear{
     pickerViewContainer.hidden = YES;
-     numberField.text = @"";
+      numberField.text = [NSString stringWithFormat:@"%@+",numberField.text];
 }
 
 - (void)dialZero{
@@ -584,6 +588,9 @@
     callingVieController *viewObj = [[callingVieController alloc] init];
     //view.displayTimer.hidden = NO;
    // [viewObj timer];
+    [[NSNotificationCenter defaultCenter]
+     postNotificationName:@"dailerView"
+     object:self];
 }
 
 -(void)connectionDidDisconnect:(TCConnection *)connection{

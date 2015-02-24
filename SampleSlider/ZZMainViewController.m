@@ -8,6 +8,7 @@
 #import "Packs.h"
 #import "ZZMainViewController.h"
 #include "AFNetworking.h"
+#import "HomeViewController.h"
 
 #import <QuartzCore/QuartzCore.h>
 
@@ -129,7 +130,7 @@
     NSLog(@"%@",self.environment);
     
     NSLog(@"PayPal iOS SDK version: %@", [PayPalMobile libraryVersion]);
-    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:@"http://54.174.166.2/getCreditPacks"]];
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:[URL_LINk  stringByAppendingString:@"getCreditPacks"]]];
     
     NSData *theData = [NSURLConnection sendSynchronousRequest:request
                                             returningResponse:nil
@@ -356,7 +357,7 @@
         NSString *paymentTime = [[completedPayment.confirmation objectForKey:@"response"]valueForKey:@"create_time"];
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         
-        NSString *url = [NSString stringWithFormat:@"http://54.174.166.2/setCreditTransaction?email=%@&amount=%@&paymentTime=%@&paymentId=%@",username,rechargeAmount,paymentTime,payPalID];
+        NSString *url = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"setCreditTransaction?email=%@&amount=%@&paymentTime=%@&paymentId=%@",username,rechargeAmount,paymentTime,payPalID]];
         NSLog(@"url----%@",url);
         [manager GET:url parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
          {

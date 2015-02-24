@@ -29,23 +29,31 @@
     self.navigationItem.titleView = titleImageView;
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
     NSString *username = [defaults objectForKey:@"userName"];
+    NSString *URl = [NSString stringWithFormat:@"getLoginStatus?email_ID=%@",
+                     [username stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
     
-    if([username length] == 0)
-    {
-//        AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-//        NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/getLoginStatus/?email_ID=%@",[username stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
-//        [manager GET:serverAddress parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
-//         {
-//             NSLog(@"Email ID Present-->%@",username);
-//             
-//         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
-//             NSLog(@"Login Status Request.....: %@", error);
-//             
-//         }];
-        UIStoryboard *mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
-        UIViewController *vc = [mainStoryBoard instantiateViewControllerWithIdentifier:@"SignInMainStoryBoard"];
-        [self presentViewController:vc animated:YES completion:nil ];
+    NSURLRequest *request = [[NSURLRequest alloc] initWithURL:[NSURL URLWithString:[URL_LINk  stringByAppendingString:URl]]];
+    
+    NSData *theData = [NSURLConnection sendSynchronousRequest:request
+                                            returningResponse:nil
+                                                        error:nil];
+    
+    NSDictionary *newJSON = [NSJSONSerialization JSONObjectWithData:theData
+                                                            options:0
+                                                              error:nil];
+    
+    NSLog(@"Sync JSON: %@", newJSON);
 
+    NSString *status = [[newJSON objectForKey:@"loginStatus"]valueForKey:@"login"];
+    if((!username)||(!status))
+    {
+        
+            UIStoryboard *mainStoryBoard = [UIStoryboard storyboardWithName:@"Main" bundle:nil];
+            UIViewController *vc = [mainStoryBoard instantiateViewControllerWithIdentifier:@"SignInMainStoryBoard"];
+            [self presentViewController:vc animated:YES completion:nil ];
+
+        
+        
     }
     
 }

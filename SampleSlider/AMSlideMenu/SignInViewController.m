@@ -12,16 +12,21 @@
 #import "AppDelegate.h"
 #import <AddressBook/AddressBook.h>
 #import "MBProgressHUD.h"
+#import "HomeViewController.h"
 #import <unistd.h>
 
+
 #define SCREENSHOT_MODE 0
+
+
 
 #ifndef kCFCoreFoundationVersionNumber_iOS_8_0
 #define kCFCoreFoundationVersionNumber_iOS_7_0 847.20
 #endif
 
 
-@interface SignInViewController ()<MBProgressHUDDelegate>{
+
+@interface SignInViewController ()<MBProgressHUDDelegate,UITextFieldDelegate>{
    
     Reachability* reachability;
     MBProgressHUD *HUD;
@@ -33,7 +38,7 @@
 
 @implementation SignInViewController
 
-@synthesize myspinner;
+@synthesize myspinner,userNameTextfield,passwordTextfield;
 
 - (void)viewDidLoad
 {
@@ -53,7 +58,9 @@
     passwordTextfield.backgroundColor = [UIColor whiteColor];
    // self.myspinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     [UIDevice currentDevice].proximityMonitoringEnabled = YES;
-        
+    self.userNameTextfield.delegate = self;
+    self.passwordTextfield.delegate = self;
+
 }
 
 
@@ -108,7 +115,7 @@
     
     
     
-    NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/appLogin?email_ID=%@&password=%@",userNameTextfield.text,passwordTextfield.text];
+    NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"appLogin?email_ID=%@&password=%@",userNameTextfield.text,passwordTextfield.text]];
 
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         NSLog(@"Server Address--->%@",serverAddress);
@@ -126,7 +133,7 @@
                 
              NSString *value = self.posts[@"loginCheck"][@"success"];
              
-            
+                
              if ([value isEqualToString:@"true"])
              {
                  
@@ -153,19 +160,24 @@
                  [self.myspinner startAnimating];
                  [MBProgressHUD hideHUDForView:self.view animated:YES];
             
+             }else if ([value isEqualToString:@"inactive"]) {
+                 UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"This user is inactive. Please contact administrator" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                 [MBProgressHUD hideHUDForView:self.view animated:YES];
+                 [alert show];
+                 
              }else{
-                                  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"" message:@"Please Enter the Corrrect Email Id or Password" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                                  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please Enter the Correct Email Id or Password" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
                 [MBProgressHUD hideHUDForView:self.view animated:YES];
                 [alert show];
                  
              }
               
-NSString *deviceToken = [defaults objectForKey:@"deviceTokenStr"];
+                NSString *deviceToken = [defaults objectForKey:@"deviceTokenStr"];
                 UILocalNotification* localNotification = [[UILocalNotification alloc] init];
                 localNotification.alertBody = @"Your alert message";
                 
                 AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
-                NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/updateApnsRegId?email_ID=%@&regId=%@&device_type=iphone",[userNameTextfield.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[deviceToken stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+                NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"updateApnsRegId?email_ID=%@&regId=%@&device_type=iphone",[userNameTextfield.text stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[deviceToken stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
                 [manager GET:serverAddress parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
                  {
                      NSLog(@"Saved");
@@ -179,7 +191,7 @@ NSString *deviceToken = [defaults objectForKey:@"deviceTokenStr"];
     } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
        NSLog(@"Error: %@", error);
         
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please Enter the Corrrect Email Id or Password" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Error Connecting server. Please contact adminstrator." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [MBProgressHUD hideHUDForView:self.view animated:YES];
         [alert show];
     }];
@@ -236,8 +248,14 @@ NSString *deviceToken = [defaults objectForKey:@"deviceTokenStr"];
 
 -(BOOL)textFieldShouldReturn:(UITextField *)textField
 {
-    [textField resignFirstResponder];
-    return YES;
+    if(textField == self.userNameTextfield){
+        [textField setReturnKeyType:UIReturnKeyDone];
+        [textField resignFirstResponder];
+    }else{
+        [textField setReturnKeyType:UIReturnKeyDone];
+        [textField resignFirstResponder];
+    }
+         return NO;
 }
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
@@ -261,5 +279,52 @@ NSString *deviceToken = [defaults objectForKey:@"deviceTokenStr"];
      [HUD show:YES];
 }
 
+- (void)textFieldDidBeginEditing:(UITextField *)textField{
+     NSLog(@"TxtEditing");
+    if(textField == self.userNameTextfield){
+       
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationDelegate:self];
+        [UIView setAnimationDuration:0.5];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        self.view.frame = CGRectMake(self.view.frame.origin.x, (self.view.frame.origin.y - 25), self.view.frame.size.width,self.view.frame.size.height);
+        [UIView commitAnimations];
+    }else if(textField == self.passwordTextfield){
+        
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationDelegate:self];
+        [UIView setAnimationDuration:0.5];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        self.view.frame = CGRectMake(self.view.frame.origin.x, (self.view.frame.origin.y - 50), self.view.frame.size.width,self.view.frame.size.height);
+        [UIView commitAnimations];
+    }
+
+}
+
+- (void)textFieldDidEndEditing:(UITextField *)textfield{
+    if(textfield == self.userNameTextfield){
+         NSLog(@"TxtEditing");
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationDelegate:self];
+        [UIView setAnimationDuration:0.5];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        self.view.frame = CGRectMake(self.view.frame.origin.x, (self.view.frame.origin.y + 25), self.view.frame.size.width,self.view.frame.size.height);
+        [UIView commitAnimations];
+    }else if(textfield == self.passwordTextfield){
+        
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationDelegate:self];
+        [UIView setAnimationDuration:0.5];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        [UIView setAnimationBeginsFromCurrentState:YES];
+        self.view.frame = CGRectMake(self.view.frame.origin.x, (self.view.frame.origin.y + 50), self.view.frame.size.width,self.view.frame.size.height);
+        [UIView commitAnimations];
+    }
+
+
+   }
 
 @end

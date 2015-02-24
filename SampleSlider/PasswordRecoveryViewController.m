@@ -8,6 +8,7 @@
 
 #import "PasswordRecoveryViewController.h"
 #import "AFNetworking.h"
+#import "HomeViewController.h"
 
 @interface PasswordRecoveryViewController ()
 
@@ -24,6 +25,7 @@
     
     self.mySpinner = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
     mySpinner.center = CGPointMake(160, 300);
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -50,7 +52,7 @@
     }else{
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
         
-        NSString *serverAddress =[NSString stringWithFormat:@"http://54.174.166.2/recoverPassword?email_ID=%@",EmailIDTxt.text];
+        NSString *serverAddress =[URL_LINk stringByAppendingString:[NSString stringWithFormat:@"recoverPassword?email_ID=%@",EmailIDTxt.text]];
         [manager GET:serverAddress parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
          {
              self.posts = (NSDictionary *) responseObject;

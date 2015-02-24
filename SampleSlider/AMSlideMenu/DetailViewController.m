@@ -35,8 +35,9 @@
     self.navigationItem.titleView = titleImageView;
     
     NSLog(@"Detaisls ----->%@",self.detailsOfMSg);
-    
-    self.phoneNumber.text = [[self.detailsOfMSg objectForKey:@"fields"]valueForKey:@"caller_ID"];
+    NSString *callerId =[[self.detailsOfMSg objectForKey:@"fields"]valueForKey:@"callerid"];
+    NSString* callerIdStr = [NSString stringWithFormat:@"%@", callerId];
+    self.phoneNumber.text = callerIdStr;
     
     self.textView.text = [[self.detailsOfMSg objectForKey:@"fields"]valueForKey:@"body"];
     
@@ -48,6 +49,8 @@
     [defaults setObject:[[self.detailsOfMSg objectForKey:@"fields"]valueForKey:@"callerid"] forKey:@"phNumber"];
     if([[defaults objectForKey:@"msgType"]isEqualToString:@"sent"]){
             self.msgType.text = @"Sent:";
+        reply.hidden = YES;
+        
     }else{
             self.msgType.text = @"Received:";
     }

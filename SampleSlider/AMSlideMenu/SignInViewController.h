@@ -8,20 +8,19 @@
 
 #import <UIKit/UIKit.h>
 
+#define URL_STRING @"http://54.174.166.2/"
 @interface SignInViewController : UIViewController
 <UITextFieldDelegate,UIApplicationDelegate>
 
-{
-    IBOutlet UITextField *userNameTextfield;
-    IBOutlet UITextField *passwordTextfield;
-}
 - (IBAction)signInClicked:(id)sender;
-
+	
 
 @property (strong,nonatomic) NSDictionary *posts;
 @property (strong,nonatomic) NSMutableArray *post;
 
 
+@property (weak, nonatomic) IBOutlet UITextField *userNameTextfield;
+@property (weak, nonatomic) IBOutlet UITextField *passwordTextfield;
 
 @property (nonatomic, strong) IBOutlet UIActivityIndicatorView *myspinner;
 - (IBAction)forgotPasswordButtonClicked:(id)sender; 

@@ -9,7 +9,7 @@
 #import "SendSmsViewController.h"
 #import "AFNetworking.h"
 #import "MBProgressHUD.h"
-
+#import "HomeViewController.h"
 @interface SendSmsViewController ()<MBProgressHUDDelegate>{
     
     NSString *userName;
@@ -70,9 +70,21 @@
     }
     
     NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
-    NSString * phNumber = [defaults objectForKey:@"phNumber"];
-    if([phNumber length] != 0){
-        senderNumber.text = phNumber;
+    NSString *str1 = [defaults objectForKey:@"phNumber"];
+    NSString * phNumber = [NSString stringWithFormat:@"%@",str1];
+    int times = [[phNumber componentsSeparatedByString:@"+"] count]-1;
+    
+    if(([phNumber length] !=0)&& !([phNumber isEqualToString:@"(null)"])) {
+        NSString *str = @"";
+        if(!(times == 1)){
+            str = @"+";
+            phNumber =[str stringByAppendingString:phNumber];
+            [defaults removeObjectForKey:@"phNumber"];
+        }else{
+            phNumber = @"";
+        }
+        NSLog(@"String Ph Number ---%@",[str stringByAppendingString:phNumber]);
+        
         
         
         NSString *oldTrimmedPhNumber = [phNumber stringByReplacingOccurrencesOfString:@" " withString:@""];
@@ -129,7 +141,7 @@
     
     AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
     
-    NSString *url = [NSString stringWithFormat:@"http://54.174.166.2/getTextCredits?email_ID=%@",userName];
+    NSString *url = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"getTextCredits?email_ID=%@",userName]];
     
     [manager GET:url parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
      {
@@ -161,7 +173,7 @@
          textUsedImg.hidden = NO;
          
      }];
-
+    
 }
 
 - (void)didReceiveMemoryWarning
@@ -170,39 +182,47 @@
     // Dispose of any resources that can be recreated.
 }
 
--(void)myTask{
-    sleep(3);
-}
 
 - (IBAction)sendSmsButtonClicked:(id)sender
 {
     
     
-    HUD = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
-    [self.navigationController.view addSubview:HUD];
+//    HUD = [[MBProgressHUD alloc] initWithView:self.navigationController.view];
+//    [self.navigationController.view addSubview:HUD];
+//    
+//    // Regiser for HUD callbacks so we can remove it from the window at the right time
+//    HUD.labelText = @"Sending.....";
+//    HUD.delegate = self;
     
-    // Regiser for HUD callbacks so we can remove it from the window at the right time
-    HUD.labelText = @"Sending.....";
-    HUD.delegate = self;
-    [HUD showWhileExecuting:@selector(myTask) onTarget:self withObject:nil animated:YES];
+    MBProgressHUD *hud = [MBProgressHUD showHUDAddedTo:self.view animated:NO];
+    hud.delegate = self;
+    hud.labelText = @"Sending.....";
 
     pickerViewContainer.hidden =YES;
     if([textRemaining.text isEqualToString:@"0"]){
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"You have run out of credits. Please purchase more credits" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [alert show];
         
+    }
+    if([countryCodeName.text isEqualToString:@""]&&[senderNumber.text isEqual:@""]){
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
+        UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please enter the values" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+        [alert show];
     }else if ([countryCodeName.text isEqualToString:@""]) {
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please select the country" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [alert show];
-    } else if([senderNumber isEqual:@""]){
+    } else if([senderNumber.text isEqual:@""]){
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please enter the phone Number" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [alert show];
     }else if([senderNumber.text length]<12 || [senderNumber.text length]>15){
+        [MBProgressHUD hideHUDForView:self.view animated:YES];
         UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Alert" message:@"Please Enter Valid Number" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
         [alert show];
 
         
-    }else if(sendSmsTextField.text.length<=160) {
+    }else if((sendSmsTextField.text.length<=160) && ![textRemaining.text isEqualToString:@"0"]) {
         
         
         AFHTTPRequestOperationManager *manager = [AFHTTPRequestOperationManager manager];
@@ -215,7 +235,7 @@
         
         NSLog(@"username---->%@",userName);
         
-        NSString  *serverAddress = [NSString stringWithFormat:@"http://54.174.166.2/sendSms/?email_ID=%@&receiver=%@&body=%@&time=%@",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[sender_no stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[body stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[startTime stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]];
+        NSString  *serverAddress = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"sendSms/?email_ID=%@&receiver=%@&body=%@&time=%@",[userName stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[sender_no stringByReplacingOccurrencesOfString:@"+" withString:@"%2B"],[body stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding],[startTime stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]];
         NSLog(@"ServerText---->%@",serverAddress);
         [manager GET:serverAddress parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
          {
@@ -228,13 +248,14 @@
                  //[self performSegueWithIdentifier:@"SignInSegue" sender:self];
                  HUD.hidden = YES;
                  UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Message Alert" message:@"Message Sent Successfully..." delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil, nil];
+                 [MBProgressHUD hideHUDForView:self.view animated:YES];
                  [alert show];
                  senderNumber.text =@"";
                  sendSmsTextField.text=@"";
                  
                  
                  //Call a link for Database Entry OF the Message
-                 NSString *url = [NSString stringWithFormat:@"http://54.174.166.2/getTextCredits?email_ID=%@",userName];
+                 NSString *url = [URL_LINk stringByAppendingString:[NSString stringWithFormat:@"getTextCredits?email_ID=%@",userName]];
                  
                  [manager GET:url parameters:nil success:^(AFHTTPRequestOperation *operation, id responseObject)
                   {
@@ -264,6 +285,7 @@
              [alert show];
          }];
     }
+     
 }
 
 
